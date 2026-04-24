@@ -1,12 +1,18 @@
 return {
   {
-    "folke/tokyonight.nvim",
+    "uloco/bluloco.nvim",
     lazy = false,
     priority = 1000,
-    opts = { style = "night" },
+    dependencies = { "rktjmp/lush.nvim" },
+    opts = {
+      style       = "dark",
+      transparent = false,
+      italics     = false,
+      terminal    = vim.fn.has("gui_running") == 1,
+    },
     config = function(_, opts)
-      require("tokyonight").setup(opts)
-      vim.cmd.colorscheme("tokyonight")
+      require("bluloco").setup(opts)
+      vim.cmd.colorscheme("bluloco-dark")
     end,
   },
 }
