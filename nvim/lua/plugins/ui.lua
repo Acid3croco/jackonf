@@ -15,10 +15,4 @@ return {
     },
   },
 
-  {
-    "echasnovski/mini.statusline",
-    version = false,
-    event = "VeryLazy",
-    opts = { use_icons = true },
-  },
 }
