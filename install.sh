@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Bootstrap jackonf on a fresh Debian/Ubuntu machine.
-#   git clone https://github.com/Acid3croco/jackonf.git ~/code/jackonf
-#   ~/code/jackonf/install.sh
+#   git clone https://github.com/Acid3croco/jackonf.git ~/projects/jackonf
+#   ~/projects/jackonf/install.sh
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
