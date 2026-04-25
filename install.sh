@@ -49,10 +49,11 @@ link() {
 }
 
 echo "==> Symlinking dotfiles"
-link "$REPO/.zshrc"     "$HOME/.zshrc"
-link "$REPO/.tmux.conf" "$HOME/.tmux.conf"
-link "$REPO/.gitconfig" "$HOME/.gitconfig"
-link "$REPO/nvim"       "$HOME/.config/nvim"
+link "$REPO/.zshrc"            "$HOME/.zshrc"
+link "$REPO/.tmux.conf"        "$HOME/.tmux.conf"
+link "$REPO/.gitconfig"        "$HOME/.gitconfig"
+link "$REPO/nvim"              "$HOME/.config/nvim"
+link "$REPO/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 
 if [ "$SHELL" != "$(command -v zsh)" ]; then
   echo "==> Setting zsh as default shell (may prompt for password)"
