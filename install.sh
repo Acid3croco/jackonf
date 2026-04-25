@@ -17,7 +17,7 @@ sudo apt-get update
 sudo apt-get install -y \
   git curl tmux zsh \
   ripgrep fd-find gcc make build-essential \
-  fzf zoxide lazygit atuin eza bat git-delta
+  fzf zoxide lazygit eza bat git-delta
 
 if ! command -v nvim >/dev/null || ! nvim --version | head -1 | grep -qE 'v0\.(1[1-9]|[2-9])'; then
   echo "==> Installing Neovim $NVIM_VERSION to ~/.local/nvim"

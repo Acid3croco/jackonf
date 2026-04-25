@@ -118,10 +118,7 @@ export VISUAL='nvim'
 alias edb='vim ~/.zshrc && source ~/.zshrc'
 
 eval "$(zoxide init zsh)"
-[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
-[ -f /usr/share/doc/fzf/examples/completion.zsh ]   && source /usr/share/doc/fzf/examples/completion.zsh
-
-eval "$(atuin init zsh)"
+eval "$(fzf --zsh)"
 
 alias bat='batcat'
 alias l='eza -la --git --icons'
