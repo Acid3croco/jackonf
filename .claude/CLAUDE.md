@@ -70,3 +70,40 @@ The same applies in reverse if Codex is the one initiating peer consultations.
 ## What the user sees
 
 Don't make the user read full transcripts of the peer exchange unless they ask. Summarize the peer's contribution in a sentence or two and integrate it into your reasoning. If the peer materially changed your conclusion, mention that briefly. Surface genuine disagreement explicitly rather than papering over it.
+
+# Driving apps via tmux
+
+When the user says "use tmux" — or when the real terminal is the surface you need to test against — drive a real tmux pane rather than running the app inline. The point is to verify end-to-end behavior (keybindings, redraws, hooks, exit paths) without contaminating the user's foreground pane.
+
+## Spawn detached, capture the pane id
+
+`tmux split-window` defaults to focusing the new pane, which steals the user's keystrokes. **Always pass `-d`** — this is a scar, not a preference. Capture the pane id with `-P -F '#{pane_id}'` so subsequent `send-keys`, `capture-pane`, and `kill-pane` calls have a stable target; pane indexes shift, `%NN` ids don't. Spawn a shell first, then drive it — that gives you a predictable target for staged commands.
+
+Canonical form:
+
+```sh
+PANE=$(tmux split-window -d -h -P -F '#{pane_id}' -t "$TMUX_PANE" -c "$PWD" 'bash')
+tmux send-keys -t "$PANE" '<command-to-launch-app>' Enter
+sleep 3
+tmux capture-pane -t "$PANE" -p | head -20
+# ...drive more keys, capture, assert...
+tmux send-keys -t "$PANE" 'q'    # prefer the app's own quit path
+tmux kill-pane -t "$PANE"        # cleanup if needed
+```
+
+## Rules
+
+- **Always `-d`.** No exceptions. Without it the spawned pane takes focus and eats the user's typing.
+- **Always `-t "$TMUX_PANE"` when spawning**, so the new pane attaches to the user's current context instead of guessing a session or window name.
+- **Always `-c <dir>` explicitly.** Spawned shells inherit tmux defaults and may otherwise run in the wrong checkout.
+- **Drive with real keys** — `Enter`, `Escape`, `C-c`, `C-d`, `C-u`, literal text. That's the contract being verified.
+- **Sleep between launch, input, and capture.** Redraws, hooks, and IPC are asynchronous; immediate capture causes false negatives.
+- **Read the UI with `tmux capture-pane -t "$PANE" -p`.** Trim with `head`/`tail` only when the assertion is local; capture in full when you need surrounding context.
+- **Prefer the app's own quit path** (`q`, `:q`, `C-c`, an exit menu) before `kill-pane`. Hard kills skip cleanup hooks and can leave stale state that bites the next run.
+- **For long or multi-line input, use `tmux load-buffer` + `tmux paste-buffer -t "$PANE"`** rather than shell-quoted `send-keys` — quoting breaks down on anything non-trivial.
+- **For isolated multi-pane drills, use `tmux new-window -d`** for a scratch window you can build up and tear down without disturbing the user's layout.
+- **Inspect first when in doubt** — `tmux list-panes -a -F '#{pane_id} #{pane_current_command}'`, `tmux display -p '#S #W #P'` — so you don't target a pane the user actually owns.
+
+## The user's own panes
+
+A long-lived pane the user is running belongs to the user. Treat it as read-only: `tmux capture-pane` to inspect, never `send-keys` into it. If your code change only takes effect after that pane restarts the app it's running, say so explicitly — the user runs the restart, not you.
